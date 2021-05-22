@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<head>
+<title>Stripe Python Payment Gateway Integration</title>
+</head>
+<body>
+<script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+    //set your publishable key
+    Stripe.setPublishableKey('Your_API_Publishable_Key');
+    
+    //callback to handle the response from stripe
+    function stripeResponseHandler(status, response) {
+        if (response.error) {
+            //enable the submit button
+            $('#payBtn').removeAttr("disabled");
+            //display the errors on the form
+            $(".payment-errors").html(response.error.message);
+        } else {
+            var form$ = $("#paymentFrm");
+            //get token id
+            var token = response['id'];
+            //insert the token into the form
+            form$.append("<input type='hidden' name='stripeToken' value='" 
+    + token + "' />");
+            //submit form to the server
+            form$.get(0).submit();
+        }
+    }
+    $(document).ready(function() {
+        //on form submit
+        $("#paymentFrm").submit(function(event) {
+            //disable the submit button to prevent repeated clicks
+            $('#payBtn').attr("disabled", "disabled");
+            
+            //create single-use token to charge the user
+            Stripe.createToken({
+                number: $('.card-number').val(),
+                cvc: $('.card-cvc').val(),
+                exp_month: $('.card-expiry-month').val(),
+                exp_year: $('.card-expiry-year').val()
+            }, stripeResponseHandler);
+            
+            //submit from callback
+            return false;
+        });
+    });
+    </script>
+
+<h1>Stripe Payment Gateway - Python CGI Implementation</h1>
+
+<form action="submit.py" method="POST" id="paymentFrm">
+    <p>   
+        <label>Name:</label>
+        <input type="text" name="name" placeholder="Your name here" size="50" required />
+    </p>
+    <p>  
+        <label>Email:</label>
+        <input type="text" name="email" placeholder="Your email here" size="50" required />
+    </p>
+    <p>  
+        <label>Card Number:</label>
+        <input type="text" name="card_num" size="20" placeholder="Your card number here" autocomplete="off" required
+class="card-number" />
+    </p>
+    <p> 
+        <label>CVC:</label>
+        <input type="text" name="cvc" size="4" autocomplete="off" class="card-cvc" required />
+    </p>
+    <p>
+        <label>Expiration (MM/YYYY):</label><br>
+        <input type="text" name="exp_month" size="2" class="card-expiry-month" placeholder="MM" required />
+        <span> / </span>
+        <input type="text" name="exp_year" size="4" class="card-expiry-year" placeholder="YYYY" required />
+    </p>
+    <button type="submit" id="payBtn">Purchase</button>
+</form>
+</body>
+
+</html>
