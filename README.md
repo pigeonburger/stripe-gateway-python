@@ -17,6 +17,8 @@ This script was originally made in PHP (the original can be found <a href="https
 
 # Setup:
 
+First, <a href="https://github.com/pigeonburger/stripe-gateway-python/releases/download/v1.0/stripe-gateway-python.zip">download</a> the Python and HTML files, extract them and put them both in the same folder somewhere in your web server directory.
+
 <h3>Get your Stripe API keys:</h3>
 
 1. Navigate to the *API Keys* section under *Developers* on your Stripe dashboard.
